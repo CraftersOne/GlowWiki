@@ -1,10 +1,8 @@
-date-format: MMMM d, yyyy
-decimal-format: "###,###"
-
 wiki:
-  domain: "wiki.crafters.one"
-  script-path: "/mediawiki"
-  protocol: "https://"
+  scheme: "https"
+  host: "wiki.crafters.one"
+  folder: "mediawiki"
+  path-segment: "api.php"
   credentials:
     username: ""
     password: ""

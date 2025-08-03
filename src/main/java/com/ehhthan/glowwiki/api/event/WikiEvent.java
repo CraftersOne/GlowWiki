@@ -2,7 +2,6 @@ package com.ehhthan.glowwiki.api.event;
 
 import com.ehhthan.glowwiki.api.event.action.EventAction;
 import com.ehhthan.glowwiki.api.util.FormatUtil;
-import com.ehhthan.glowwiki.api.wiki.WikiAPI;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.LinkedList;
@@ -17,7 +16,7 @@ public class WikiEvent {
     public WikiEvent(ConfigurationSection section) {
         this.id = FormatUtil.id(section.getName());
 
-        this.type = Type.get(section.getString("event", "ON_JOIN"));
+        this.type = Type.get(section.getString("event", "MANUAL"));
         ConfigurationSection actionSection = section.getConfigurationSection("actions");
         if (actionSection != null) {
             for (String key : actionSection.getKeys(false)) {
@@ -41,7 +40,8 @@ public class WikiEvent {
     public enum Type {
         ON_JOIN,
         ON_QUIT,
-        MANUAL;
+        MANUAL,
+        COMMAND;
 
         public static Type get(String id) {
             id = id.toUpperCase(Locale.ROOT).replace("-", "_").replace(" ", "_");

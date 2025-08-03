@@ -2,7 +2,6 @@ package com.ehhthan.glowwiki.api.event;
 
 import com.ehhthan.glowwiki.GlowWiki;
 import com.ehhthan.glowwiki.api.util.FormatUtil;
-import com.ehhthan.glowwiki.api.wiki.template.WikiTemplate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;

@@ -1,4 +1,5 @@
 wiki:
+  link: "https://wiki.crafters.one/wiki/"
   scheme: "https"
   host: "wiki.crafters.one"
   folder: "mediawiki"

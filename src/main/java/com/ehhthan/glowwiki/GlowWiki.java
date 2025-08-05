@@ -23,6 +23,7 @@ import java.util.logging.Level;
 public final class GlowWiki extends JavaPlugin {
     private static GlowWiki INSTANCE;
     private WikiEventManager events;
+    private MessageManager messages;
     private GlowAuditor auditor;
     private GlowUploader uploader;
     private PlayerListener playerListener;
@@ -47,6 +48,7 @@ public final class GlowWiki extends JavaPlugin {
         }
 
         this.events = new WikiEventManager(this);
+        this.messages = new MessageManager(this);
         this.auditor = new GlowAuditor(this);
         this.uploader = new GlowUploader(this);
         this.playerListener = new PlayerListener(this);
@@ -57,7 +59,9 @@ public final class GlowWiki extends JavaPlugin {
 
     public void reload() {
         events.reload(this);
+        messages.reload(this);
         playerListener.reload(events);
+        glowClient.refresh();
     }
 
     private void registerCommands() {
@@ -96,6 +100,10 @@ public final class GlowWiki extends JavaPlugin {
 
     public WikiEventManager getEvents() {
         return events;
+    }
+
+    public MessageManager getMessages() {
+        return messages;
     }
 
     public GlowAuditor getAuditor() {

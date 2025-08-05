@@ -4,6 +4,7 @@ package com.ehhthan.glowwiki.api.event.action;
 import com.ehhthan.glowwiki.GlowWiki;
 import com.ehhthan.glowwiki.api.info.GlowInfo;
 import com.ehhthan.glowwiki.api.wiki.GlowClient;
+import com.ehhthan.glowwiki.api.wiki.ParamPair;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -19,9 +20,17 @@ public class EditContentAction extends EventAction {
     private final String content;
     private final boolean createOnly;
 
+    public EditContentAction(String title, int section, String content, boolean createOnly) {
+        this.title = title;
+        this.section = section;
+
+        this.content = content;
+        this.createOnly = createOnly;
+    }
+
     public EditContentAction(ConfigurationSection section) {
         this.title = section.getString("title");
-        this.section = section.getInt("section");
+        this.section = section.getInt("section", 0);
 
         String content = "";
         if (section.isString("file")) {
@@ -41,24 +50,28 @@ public class EditContentAction extends EventAction {
 
     @Override
     public boolean run(GlowClient client, OfflinePlayer player) {
-        QueryPairParser parser = new QueryPairParser(player);
+        ParamPair.Parser parser = new ParamPair.Parser(player);
 
-        List<QueryPair> pairs = new LinkedList<>(List.of(
-            QueryPair.of("action", "edit"),
+        List<ParamPair> query = new LinkedList<>(List.of(
+            ParamPair.of("action", "edit")
+        ));
+
+        List<ParamPair> body = new LinkedList<>(List.of(
             parser.of("title", GlowInfo.parse(title, player)),
             parser.of("section", String.valueOf(section)),
             parser.of("text", content),
-            QueryPair.of("summary", "Bot requested.")
+            ParamPair.of("summary", "Bot requested.")
         ));
 
+
+
         if (createOnly) {
-            pairs.add(QueryPair.of("createonly", "true"));
+            body.add(ParamPair.of("createonly", "true"));
         }
 
         try {
-            client.request(pairs);
+            client.botRequest(query, body);
             return true;
-
         } catch (IOException e) {
             return false;
         }

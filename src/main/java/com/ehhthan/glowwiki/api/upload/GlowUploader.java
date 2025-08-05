@@ -2,17 +2,16 @@ package com.ehhthan.glowwiki.api.upload;
 
 import co.aikar.commands.InvalidCommandArgument;
 import com.ehhthan.glowwiki.GlowWiki;
-import com.ehhthan.glowwiki.api.event.action.EventAction;
-import com.ehhthan.glowwiki.api.info.GlowInfo;
+import com.ehhthan.glowwiki.api.event.action.EditContentAction;
+import com.ehhthan.glowwiki.api.event.action.PageProtectionsAction;
+import com.ehhthan.glowwiki.api.wiki.ParamPair;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
@@ -20,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,36 +53,23 @@ public class GlowUploader {
                             }
 
                             JsonArray pageArray = new Gson().toJsonTree(pages).getAsJsonArray();
+                            Base64.Encoder encoder = Base64.getUrlEncoder();
+                            String encodedPages = encoder.encodeToString(pageArray.toString().getBytes(StandardCharsets.UTF_8));
+                            String encodedTitle = encoder.encodeToString(title.getBytes(StandardCharsets.UTF_8));
+                            String wikiTitle = String.format("Book:%s:%s", author, encodedTitle);
 
-                            String encodedPages = Base64.getEncoder().encodeToString(pageArray.toString().getBytes());
+                            EditContentAction editAction = new EditContentAction(wikiTitle, 0, String.format("{{Book|author=%s|title=%s|pages=%s}}",
+                                author, encodedTitle, encodedPages), true);
+                            PageProtectionsAction protectionAction = new PageProtectionsAction(wikiTitle, "edit=sysop", "Books should not be edited.");
 
-                            String wikiTitle = String.format("Book:%s:%s", author, title);
+                            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                                editAction.run(plugin.getClient(), player);
+                                protectionAction.run(plugin.getClient(), player);
+                            });
 
+                            Component component = plugin.getMessages().parse("book-created", Placeholder.parsed("title", wikiTitle), Placeholder.parsed("link", plugin.getClient().link(wikiTitle)));
 
-                            try {
-                                plugin.getClient().request(List.of(
-                                    EventAction.QueryPair.of("action", "edit"),
-                                    EventAction.QueryPair.of("title", wikiTitle),
-                                    EventAction.QueryPair.of("section", "0"),
-                                    EventAction.QueryPair.of("text", String.format("{{Book|author=%s|title=%s|pages=%s}}", author, title, encodedPages)),
-                                    EventAction.QueryPair.of("summary", "Bot book upload."),
-                                    EventAction.QueryPair.of("createonly", "true")
-                                ));
-
-                                plugin.getClient().request(List.of(
-                                    EventAction.QueryPair.of("action", "protect"),
-                                    EventAction.QueryPair.of("title", wikiTitle),
-                                    EventAction.QueryPair.of("protections", "edit=sysop"),
-                                    EventAction.QueryPair.of("reason", "Books should not be edited.")
-                                ));
-
-                                Component component = MiniMessage.miniMessage().deserialize("You can embed your book anywhere on the wiki by clicking the text below to copy it." +
-                                    "<newline><green><click:copy_to_clipboard:'{{:<title>}}'><hover:show_text:'Click to copy.'>{{:<title>}}</hover></click>", Placeholder.parsed("title", wikiTitle));
-                                player.sendMessage("Your book has been created!");
-                                player.sendMessage(component);
-                            } catch (IOException e) {
-                                throw new InvalidCommandArgument("Could not upload book.");
-                            }
+                            player.sendMessage(component);
                         }
 
                     } else {

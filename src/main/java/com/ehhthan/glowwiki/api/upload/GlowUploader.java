@@ -4,7 +4,7 @@ import co.aikar.commands.InvalidCommandArgument;
 import com.ehhthan.glowwiki.GlowWiki;
 import com.ehhthan.glowwiki.api.event.action.EditContentAction;
 import com.ehhthan.glowwiki.api.event.action.PageProtectionsAction;
-import com.ehhthan.glowwiki.api.wiki.ParamPair;
+import com.ehhthan.glowwiki.api.util.ComponentUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import net.kyori.adventure.text.Component;
@@ -18,7 +18,6 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.LinkedList;
@@ -49,7 +48,7 @@ public class GlowUploader {
                             List<String> pages = new LinkedList<>();
 
                             for (Component page :  bookMeta.pages()) {
-                                pages.add(MiniMessage.miniMessage().serialize(page));
+                                pages.add(MiniMessage.miniMessage().serialize(ComponentUtil.convertLegacy(page)));
                             }
 
                             JsonArray pageArray = new Gson().toJsonTree(pages).getAsJsonArray();

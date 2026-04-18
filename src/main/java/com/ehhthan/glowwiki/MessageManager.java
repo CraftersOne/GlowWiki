@@ -1,11 +1,9 @@
 package com.ehhthan.glowwiki;
 
-import com.ehhthan.glowwiki.api.event.WikiEvent;
 import com.ehhthan.glowwiki.api.util.FormatUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

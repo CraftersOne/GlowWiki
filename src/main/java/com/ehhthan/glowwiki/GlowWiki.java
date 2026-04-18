@@ -11,7 +11,10 @@ import com.ehhthan.glowwiki.command.GlowWikiCommand;
 import com.ehhthan.glowwiki.file.DirectoryCopyFileVisitor;
 import com.ehhthan.glowwiki.listeners.PlayerListener;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -66,7 +69,6 @@ public final class GlowWiki extends JavaPlugin {
 
     private void registerCommands() {
         PaperCommandManager commandManager = new PaperCommandManager(this);
-
         commandManager.getCommandCompletions().registerCompletion("events", c -> events.values().stream().map(WikiEvent::getId).toList());
         commandManager.getCommandCompletions().registerCompletion("upload-types", c -> Arrays.stream(GlowUploader.Type.values()).map((type) -> type.name().toLowerCase(Locale.ROOT)).toList());
 

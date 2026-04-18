@@ -1,0 +1,6 @@
+{{PlayerInfoBox|uuid=%uuid%}}
+== About ==
+
+== Trivia ==
+
+== Collectibles ==

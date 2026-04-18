@@ -1,0 +1,4 @@
+book-created:
+  - "<click:open_url:'<link>'><hover:show_text:'Click to visit the link.'><white>You book has been created. Click here to go to the link.</hover></click>"
+  - "<white>You can also embed your book anywhere on the wiki by clicking the text below to copy it."
+  - "<green><click:copy_to_clipboard:'{{:<title>}}'><hover:show_text:'Click to copy.'>{{:<title>}}</hover></click>"

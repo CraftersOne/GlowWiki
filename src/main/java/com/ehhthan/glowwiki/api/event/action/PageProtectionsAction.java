@@ -10,11 +10,17 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DeletePageAction extends EventAction {
-    private final String title;
+public class PageProtectionsAction extends EventAction {
+    private final String title, protections, reason;
 
-    public DeletePageAction(ConfigurationSection section) {
-        this.title = section.getString("title");
+    public PageProtectionsAction(ConfigurationSection section) {
+        this(section.getString("title"), section.getString("protections"), section.getString("reason"));
+    }
+
+    public PageProtectionsAction(String title, String protections, String reason) {
+        this.title = title;
+        this.protections = protections;
+        this.reason = reason;
     }
 
     @Override
@@ -22,12 +28,13 @@ public class DeletePageAction extends EventAction {
         ParamPair.Parser parser = new ParamPair.Parser(player);
 
         List<ParamPair> query = new LinkedList<>(List.of(
-            ParamPair.of("action", "delete")
+            ParamPair.of("action", "protect")
         ));
 
         List<ParamPair> body = new LinkedList<>(List.of(
-            ParamPair.of("summary", "Bot requested."),
-            parser.of("title", GlowInfo.parse(title, player))
+            parser.of("title", GlowInfo.parse(title, player)),
+            ParamPair.of("protections", protections),
+            ParamPair.of("reason", reason)
         ));
 
         try {
